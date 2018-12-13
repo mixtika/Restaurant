@@ -384,3 +384,16 @@ router.post('/save_menu', (req, res) => {
     });
   });
 });
+
+router.get('/list_menu', (req, res) => {
+  var data=req.query;
+  MENU.find({id_restaurant: data.id_restaurant}).exec( (error, docs) => {
+    if (docs != null) {
+        res.status(200).json({"menus": docs});
+        return;
+    }
+    res.status(200).json({
+      "msn" : "No existe el recurso "
+    });
+});
+});
