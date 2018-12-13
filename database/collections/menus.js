@@ -6,7 +6,8 @@ var menusSchema = new Schema({
   price : Number,
   description : String,
   registerdate : Date,
-  picture : String
+  picture : String,
+  id_restaurant : String
 });
 var menus = mongoose.model("menus", menusSchema);
 module.exports = menus;

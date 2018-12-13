@@ -5,6 +5,8 @@ var fs = require('fs');
 //var _ = require("underscore");
 var RESTAURANT = require("../../../database/collections/restaurant");
 var USER = require("../../../database/collections/users");
+var MENU = require("../../../database/collections/menus");
+
 
 var Home = require("../../../database/collections/restaurant");
 
@@ -364,35 +366,21 @@ router.post("/login", (req, res, next) => {
     else
     {
       res.status(200).json({ "users": doc });
-return;
-/*      if(doc!=null)
-      {
-        res.status(200).json({
-          username : doc["username"],
-          id_restaurant : doc["id_restaurant"]
-        });
-      }
-      else
-      {
-        res.status(200).json({
-          username : null,
-          id_restaurant : -1
-        });
-      } */
+      return;
     }
-    /*if (doc) {
-      //res.status(200).json(doc);
-      //jwt.sign({username: doc.username, password: doc.password}, "secretkey123", (err, token) => {
-        jwt.sign({username: doc.username, password: doc.password }, "secretkey123", (err, token) => {
-          console.log(err);
-          res.status(200).json({
-            token : token
-          });
-      })
-    } else {
-      res.status(200).json({
-        msn : "El usuario no existe en la base de datos"
-      });
-    }*/
+  });
+});
+
+/***********CODIGO MENU*************/
+router.post('/save_menu', (req, res) => {
+  var data=req.query;
+  data['picture'] = "picture.jpg";
+  data['registerdate'] = new Date();
+  var newrest = new MENU(data);
+  newrest.save().then( rr => {
+    res.status(200).json({
+      "id": rr._id,
+      "msn": "Menu agregado con exito"
+    });
   });
 });
