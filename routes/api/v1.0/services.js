@@ -328,7 +328,7 @@ router.post('/test', (req, res) => {
 
 
 router.post('/test', (req, res) => {
-  var params=req.query;;
+  var params=req.query;
   res.status(200).json({
       "msn" : params
   });
@@ -354,7 +354,7 @@ router.post("/login", (req, res, next) => {
   var username = params.username;
   var password = params.password;
 
-  var result = USER.findOne({username: username, password: password}).exec((err, doc) => {
+  var result = USER.find({username: username, password: password}).exec((err, doc) => {
     if (err) {
       res.status(200).json({
         msn : "No se puede concretar con la peticion"
@@ -363,10 +363,8 @@ router.post("/login", (req, res, next) => {
     }
     else
     {
-      res.status(200).json({ "users":doc
-          
-        });
-
+      res.status(200).json({ "users": doc });
+return;
 /*      if(doc!=null)
       {
         res.status(200).json({
