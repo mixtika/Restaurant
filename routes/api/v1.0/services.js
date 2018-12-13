@@ -4,6 +4,8 @@ var router = express.Router();
 var fs = require('fs');
 //var _ = require("underscore");
 var RESTAURANT = require("../../../database/collections/restaurant");
+var USER = require("../../../database/collections/users");
+
 var Home = require("../../../database/collections/restaurant");
 
 var Img = require("../../../database/collections/img");
@@ -23,34 +25,7 @@ var upload = multer({
   storage: storage
 }).single("img");;
 
-/*
-Login USER
-*/
-router.post("/login", (req, res, next) => {
-  var username = req.body.username;
-  var password = req.body.password;
-  var result = Home.findOne({name: username,password: password}).exec((err, doc) => {
-    if (err) {
-      res.status(200).json({
-        msn : "No se puede concretar con la peticion "
-      });
-      return;
-    }
-    if (doc) {
-      //res.status(200).json(doc);
-      jwt.sign({name: doc.name, password: doc.password}, "secretkey123", (err, token) => {
-          console.log(err);
-          res.status(200).json({
-            token : token
-          });
-      })
-    } else {
-      res.status(200).json({
-        msn : "El usuario no existe ne la base de datos"
-      });
-    }
-  });
-});
+
 //Middelware
 function verifytoken (req, res, next) {
   //Recuperar el header
@@ -344,10 +319,82 @@ router.post('/save_restaurant', (req, res) => {
   });
 });
 
+router.post('/test', (req, res) => {
+  var params=req.query;;
+  res.status(200).json({
+      "msn" : params
+  });
+});
+
 
 router.post('/test', (req, res) => {
   var params=req.query;;
   res.status(200).json({
       "msn" : params
+  });
+});
+
+/*
+Login USER
+*/
+router.post('/save_user', (req, res) => {
+  var data=req.body;
+  var newUser = new USER(data);
+  newUser.save().then( rr => {
+    res.status(200).json({
+      "id": rr._id,
+      "msn": "usuario agregado con exito"
+    });
+  });
+});
+
+router.post("/login", (req, res, next) => {
+  var params = req.query;
+
+  var username = params.username;
+  var password = params.password;
+
+  var result = USER.findOne({username: username, password: password}).exec((err, doc) => {
+    if (err) {
+      res.status(200).json({
+        msn : "No se puede concretar con la peticion"
+      });
+      return;
+    }
+    else
+    {
+      res.status(200).json({ "users":doc
+          
+        });
+
+/*      if(doc!=null)
+      {
+        res.status(200).json({
+          username : doc["username"],
+          id_restaurant : doc["id_restaurant"]
+        });
+      }
+      else
+      {
+        res.status(200).json({
+          username : null,
+          id_restaurant : -1
+        });
+      } */
+    }
+    /*if (doc) {
+      //res.status(200).json(doc);
+      //jwt.sign({username: doc.username, password: doc.password}, "secretkey123", (err, token) => {
+        jwt.sign({username: doc.username, password: doc.password }, "secretkey123", (err, token) => {
+          console.log(err);
+          res.status(200).json({
+            token : token
+          });
+      })
+    } else {
+      res.status(200).json({
+        msn : "El usuario no existe en la base de datos"
+      });
+    }*/
   });
 });
