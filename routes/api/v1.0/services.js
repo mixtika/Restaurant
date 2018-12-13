@@ -6,6 +6,7 @@ var fs = require('fs');
 var RESTAURANT = require("../../../database/collections/restaurant");
 var USER = require("../../../database/collections/users");
 var MENU = require("../../../database/collections/menus");
+var ORDER = require("../../../database/collections/orders")
 
 
 var Home = require("../../../database/collections/restaurant");
@@ -23,6 +24,7 @@ var storage = multer.diskStorage({
     cb(null, "IMG_" + Date.now() + ".jpg");
   }
 });
+
 var upload = multer({
   storage: storage
 }).single("img");;
@@ -371,6 +373,32 @@ router.post("/login", (req, res, next) => {
   });
 });
 
+/***********CODIGO ORDEN************************/
+router.post('/save_order', (req, res) => {
+  res.status(200).json({"id":req.query});
+  var data=req.query;
+  data['orderdate'] = new Date();
+  var neworder = new ORDER(data);
+  neworder.save().then( rr => {
+    res.status(200).json({
+      "id": rr._id,
+      "msn": "Orden agregado con exito"
+    });
+  });
+});
+
+router.get('/list_order', (req, res) => {
+  var data=req.query;
+  ORDER.find({id_restaurant: data.id_restaurant}).exec( (error, docs) => {
+    if (docs != null) {
+        res.status(200).json({"orders": docs});
+        return;
+    }
+    res.status(200).json({
+      "msn" : "No existe el recurso "
+    });
+});
+});
 /***********CODIGO MENU*************/
 router.post('/save_menu', (req, res) => {
   var data=req.query;
@@ -396,4 +424,19 @@ router.get('/list_menu', (req, res) => {
       "msn" : "No existe el recurso "
     });
 });
+});
+
+router.post('/upload', function(req, res, next) {
+    res.status(200).json({ "msn": req.query });
+    console.log(req);
+    /*for(var x=0;x<req.files.length;x++) {
+        //copiamos el archivo a la carpeta definitiva de fotos
+       fs.createReadStream('./uploads/'+req.files[x].filename).pipe(fs.createWriteStream('./public/menu/'+req.files[x].originalname)); 
+       //borramos el archivo temporal creado
+       fs.unlink('./uploads/'+req.files[x].filename); 
+    }  
+    var pagina='<!doctype html><html><head></head><body>'+
+               '<p>Se subieron las fotos</p>'+
+               '<br><a href="/">Retornar</a></body></html>';
+      res.send(pagina);*/        
 });
